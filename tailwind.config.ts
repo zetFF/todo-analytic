@@ -26,39 +26,53 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#0EA5E9",
+          DEFAULT: "#6366F1", // Indigo
           foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#8B5CF6",
+          DEFAULT: "#A855F7", // Purple
           foreground: "#FFFFFF",
         },
         success: {
-          DEFAULT: "#22C55E",
+          DEFAULT: "#10B981", // Emerald
           foreground: "#FFFFFF",
         },
         muted: {
-          DEFAULT: "#F1F5F9",
+          DEFAULT: "#F5F7FA",
           foreground: "#64748B",
         },
         accent: {
-          DEFAULT: "#8B5CF6",
+          DEFAULT: "#F59E0B", // Amber
           foreground: "#FFFFFF",
         },
       },
+      borderRadius: {
+        lg: "1rem",
+        md: "0.75rem",
+        sm: "0.5rem",
+      },
+      boxShadow: {
+        card: "0px 4px 20px rgba(0, 0, 0, 0.05)",
+        dropdown: "0px 10px 30px rgba(0, 0, 0, 0.1)",
+      },
       keyframes: {
         slideIn: {
-          from: { transform: "translateY(10px)", opacity: "0" },
+          from: { transform: "translateY(20px)", opacity: "0" },
           to: { transform: "translateY(0)", opacity: "1" },
         },
         fadeIn: {
           from: { opacity: "0" },
           to: { opacity: "1" },
         },
+        pulse: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        }
       },
       animation: {
-        slideIn: "slideIn 0.2s ease-out",
-        fadeIn: "fadeIn 0.3s ease-out",
+        slideIn: "slideIn 0.3s ease-out",
+        fadeIn: "fadeIn 0.4s ease-out",
+        pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },
   },
