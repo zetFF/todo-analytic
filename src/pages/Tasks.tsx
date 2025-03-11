@@ -1,27 +1,29 @@
 
 import { useState } from "react";
 import { useTaskContext } from "../context/TaskContext";
-import { Plus, CheckCircle2, Circle, Trash2, Clock, Tag } from "lucide-react";
+import TaskForm from "../components/TaskForm";
+import TaskItem from "../components/TaskItem";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
+import { CheckCircle2 } from "lucide-react";
 
 const Tasks = () => {
-  const { tasks, addTask, toggleTask, deleteTask } = useTaskContext();
-  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const { tasks } = useTaskContext();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState<string | null>(null);
+  const [filterPriority, setFilterPriority] = useState<string | null>(null);
 
-  const handleAddTask = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTaskTitle.trim()) return;
+  const filteredTasks = tasks.filter(task => {
+    const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          (task.description?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
+    const matchesCategory = filterCategory ? task.category === filterCategory : true;
+    const matchesPriority = filterPriority ? task.priority === filterPriority : true;
+    
+    return matchesSearch && matchesCategory && matchesPriority;
+  });
 
-    addTask({
-      title: newTaskTitle,
-      completed: false,
-      category: "inbox",
-    });
-    setNewTaskTitle("");
-    toast.success("Task added successfully");
-  };
+  const categories = Array.from(new Set(tasks.map(task => task.category)));
+  const priorities = ["low", "medium", "high"];
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 animate-fadeIn">
@@ -30,79 +32,78 @@ const Tasks = () => {
         <p className="text-gray-500">Manage your tasks efficiently</p>
       </div>
 
-      <form onSubmit={handleAddTask} className="flex gap-3 bg-white p-1 rounded-lg shadow-card border border-gray-100">
+      <TaskForm />
+
+      <div className="space-y-2">
         <Input
-          value={newTaskTitle}
-          onChange={(e) => setNewTaskTitle(e.target.value)}
-          placeholder="Add a new task..."
-          className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-base"
+          type="search"
+          placeholder="Search tasks..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full bg-white border-gray-200"
         />
-        <Button type="submit" size="sm" className="bg-primary hover:bg-primary/90 transition-all">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Task
-        </Button>
-      </form>
+        
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant={filterCategory === null ? "default" : "outline"}
+            onClick={() => setFilterCategory(null)}
+            className="h-8"
+          >
+            All Categories
+          </Button>
+          {categories.map(category => (
+            <Button
+              key={category}
+              size="sm"
+              variant={filterCategory === category ? "default" : "outline"}
+              onClick={() => setFilterCategory(category)}
+              className="h-8 capitalize"
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
+        
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant={filterPriority === null ? "default" : "outline"}
+            onClick={() => setFilterPriority(null)}
+            className="h-8"
+          >
+            All Priorities
+          </Button>
+          {priorities.map(priority => (
+            <Button
+              key={priority}
+              size="sm"
+              variant={filterPriority === priority ? "default" : "outline"}
+              onClick={() => setFilterPriority(priority)}
+              className="h-8 capitalize"
+            >
+              {priority}
+            </Button>
+          ))}
+        </div>
+      </div>
 
       <div className="space-y-4">
-        {tasks.length === 0 ? (
+        {filteredTasks.length === 0 ? (
           <div className="text-center py-12 px-4 bg-white rounded-xl border border-gray-100 shadow-sm">
             <div className="mx-auto w-16 h-16 bg-primary/10 text-primary flex items-center justify-center rounded-full mb-4">
               <CheckCircle2 size={24} />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">No tasks yet</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-1">No tasks found</h3>
             <p className="text-gray-500 max-w-sm mx-auto">
-              Add your first task using the form above and start being productive!
+              {tasks.length === 0 
+                ? "Add your first task using the form above and start being productive!" 
+                : "Try changing your search or filters to find what you're looking for."}
             </p>
           </div>
         ) : (
-          tasks.map((task) => (
-            <div
-              key={task.id}
-              className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 shadow-card hover:shadow-lg transition-all animate-slideIn"
-            >
-              <div className="flex items-center gap-3 flex-1">
-                <button
-                  onClick={() => toggleTask(task.id)}
-                  className="text-gray-400 hover:text-primary transition-all"
-                >
-                  {task.completed ? (
-                    <CheckCircle2 className="h-6 w-6 text-success" />
-                  ) : (
-                    <Circle className="h-6 w-6" />
-                  )}
-                </button>
-                <div className="flex-1">
-                  <span
-                    className={`block font-medium ${
-                      task.completed ? "line-through text-gray-400" : "text-gray-800"
-                    }`}
-                  >
-                    {task.title}
-                  </span>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Clock size={12} />
-                      <span>Today</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Tag size={12} />
-                      <span>{task.category}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  deleteTask(task.id);
-                  toast.success("Task deleted");
-                }}
-                className="text-gray-400 hover:text-red-500 hover:bg-red-50"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
+          filteredTasks.map((task) => (
+            <TaskItem key={task.id} task={task} />
           ))
         )}
       </div>

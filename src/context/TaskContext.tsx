@@ -7,6 +7,7 @@ interface TaskContextType {
   addTask: (task: Omit<Task, "id" | "createdAt">) => void;
   toggleTask: (id: string) => void;
   deleteTask: (id: string) => void;
+  updateTask: (id: string, updates: Partial<Omit<Task, "id" | "createdAt">>) => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -35,8 +36,16 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     setTasks((prev) => prev.filter((task) => task.id !== id));
   }, []);
 
+  const updateTask = useCallback((id: string, updates: Partial<Omit<Task, "id" | "createdAt">>) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id ? { ...task, ...updates } : task
+      )
+    );
+  }, []);
+
   return (
-    <TaskContext.Provider value={{ tasks, addTask, toggleTask, deleteTask }}>
+    <TaskContext.Provider value={{ tasks, addTask, toggleTask, deleteTask, updateTask }}>
       {children}
     </TaskContext.Provider>
   );

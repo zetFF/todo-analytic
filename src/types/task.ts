@@ -6,4 +6,6 @@ export interface Task {
   category: string;
   createdAt: Date;
   dueDate?: Date;
+  priority: 'low' | 'medium' | 'high';
+  description?: string;
 }
