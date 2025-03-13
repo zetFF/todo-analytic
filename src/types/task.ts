@@ -8,4 +8,11 @@ export interface Task {
   dueDate?: Date;
   priority: 'low' | 'medium' | 'high';
   description?: string;
+  tags?: string[];
+  subtasks?: {
+    id: string;
+    title: string;
+    completed: boolean;
+  }[];
+  color?: string;
 }
