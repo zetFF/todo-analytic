@@ -52,10 +52,10 @@ const TagList = ({ task }: TagListProps) => {
           {task.tags.map((tag) => (
             <div 
               key={tag} 
-              className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ${getTagColor(tag)}`}
+              className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${getTagColor(tag)}`}
             >
               <Tag className="h-3 w-3" />
-              <span>{tag}</span>
+              <span className="font-sans">{tag}</span>
               <button
                 className="hover:text-red-500 ml-1"
                 onClick={() => removeTag(task.id, tag)}
@@ -73,7 +73,7 @@ const TagList = ({ task }: TagListProps) => {
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
             placeholder="Add tag..."
-            className="text-xs h-7"
+            className="text-xs font-sans h-7"
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleAddTag();
             }}
@@ -99,7 +99,7 @@ const TagList = ({ task }: TagListProps) => {
       ) : (
         <Button
           variant="ghost"
-          className="text-xs h-6 text-gray-500 hover:text-primary hover:bg-primary/5"
+          className="text-xs h-6 font-medium text-gray-500 hover:text-primary hover:bg-primary/5"
           onClick={() => setIsAdding(true)}
         >
           <Tag className="h-3 w-3 mr-1" />
